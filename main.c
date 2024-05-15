@@ -1,4 +1,25 @@
 #include <stdio.h>
+#include <math.h>
+
+
+void two_dimensionalArray(int n) {
+    int a[100][100];
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            a[i][j] = (int) abs(i + j);
+        }
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%d ", a[i][j]);
+        }
+        printf("\n");
+    }
+
+
+}
 
 void insertionSort(int arr[], int n) {
     int i, key, j;
@@ -68,7 +89,23 @@ char medianFilter(FILE *f) {
     return 0;
 }
 
-void main(int argc, char **argv) {
+void test_medianFilter() {
     FILE *f1 = fopen("цифровое изображение.txt", "r");
     medianFilter(f1);
+}
+
+void test_two_dimensionalArray(){
+    int n = 3;
+    //int a = [[1,1,2,2],0,0,1,1]];
+    two_dimensionalArray(n);
+}
+
+
+void test() {
+    test_two_dimensionalArray();
+    test_medianFilter();
+}
+
+void main(int argc, char **argv) {
+    test();
 }
