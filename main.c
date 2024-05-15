@@ -96,7 +96,7 @@ void test_medianFilter() {
 
 void test_two_dimensionalArray(){
     int n = 3;
-    //int a = [[1,1,2,2],0,0,1,1]];
+
     two_dimensionalArray(n);
 }
 
