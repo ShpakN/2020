@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
-
+#include <stdlib.h>
+#include <string.h>
 
 void two_dimensionalArray(int n) {
     int a[100][100];
@@ -89,12 +90,67 @@ char medianFilter(FILE *f) {
     return 0;
 }
 
+
+struct Pair {
+    char *domain;
+    int count;
+};
+
+struct Pair *subdomainVisits(char **cpdomains, int cpdomainsSize, int *returnSize) {
+    struct Pair *ans = (struct Pair *) malloc(sizeof(struct Pair) * cpdomainsSize);
+    int ansSize = 0;
+
+    for (int i = 0; i < cpdomainsSize; i++) {
+        char *token = strtok(cpdomains[i], " ");
+        int count = atoi(token);
+        char *domain = strtok(NULL, " ");
+
+        char *frag = strtok(domain, ".");
+        while (frag != NULL) {
+            for (int j = 0; j < strlen(frag); j++) {
+                if (frag[j] == '.') {
+                    frag[j] = '\0';
+                    break;
+                }
+            }
+            for (int j = i; j < cpdomainsSize; j++) {
+                if (strcmp(ans[j].domain, frag) == 0) {
+                    ans[j].count += count;
+                    break;
+                }
+            }
+            ans[ansSize].domain = frag;
+            ans[ansSize].count = count;
+            ansSize++;
+
+            frag = strtok(NULL, ".");
+        }
+    }
+
+    *returnSize = ansSize;
+    return ans;
+}
+
+
+void test_subdomainVisits() {
+    char *cpdomains[] = {"9001 discuss.leetcode.com"};
+    int cpdomainsSize = 1;
+    int returnSize;
+    struct Pair *result = subdomainVisits(cpdomains, cpdomainsSize, &returnSize);
+
+    for (int i = 0; i < returnSize; i++) {
+        printf("%d %s\n", result[i].count, result[i].domain);
+    }
+
+    free(result);
+}
+
 void test_medianFilter() {
     FILE *f1 = fopen("цифровое изображение.txt", "r");
     medianFilter(f1);
 }
 
-void test_two_dimensionalArray(){
+void test_two_dimensionalArray() {
     int n = 3;
 
     two_dimensionalArray(n);
@@ -104,6 +160,7 @@ void test_two_dimensionalArray(){
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
+    test_subdomainVisits();
 }
 
 void main(int argc, char **argv) {
