@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 void two_dimensionalArray(int n) {
     int a[100][100];
@@ -132,6 +133,66 @@ struct Pair *subdomainVisits(char **cpdomains, int cpdomainsSize, int *returnSiz
 }
 
 
+#define n 3
+
+void findPrefixCount(int p_arr[][n], bool arr[][n]) {
+    for (int i = 0; i < n; i++) {
+        for (int j = n - 1; j >= 0; j--) {
+            if (!arr[i][j])
+                continue;
+            if (j != n - 1)
+                p_arr[i][j] += p_arr[i][j + 1];
+            p_arr[i][j] += (int)arr[i][j];
+        }
+    }
+}
+
+int matrixAllOne(bool arr[][n]) {
+    int p_arr[n][n];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            p_arr[i][j] = 0;
+        }
+    }
+
+    findPrefixCount(p_arr, arr);
+    int ans = 0;
+
+    for (int j = 0; j < n; j++) {
+        int i = n - 1;
+        struct Pair {
+            int first;
+            int second;
+        } *q = malloc(n * sizeof(struct Pair));
+        int q_size = 0;
+        int to_sum = 0;
+
+        while (i >= 0) {
+            int c = 0;
+            while (q_size != 0 && q[q_size - 1].first > p_arr[i][j]) {
+                to_sum -= (q[q_size - 1].second + 1) * (q[q_size - 1].first - p_arr[i][j]);
+                c += q[q_size - 1].second + 1;
+                q_size--;
+            }
+            to_sum += p_arr[i][j];
+            ans += to_sum;
+            q[q_size].first = p_arr[i][j];
+            q[q_size].second = c;
+            q_size++;
+            i--;
+        }
+        free(q);
+    }
+
+    return ans;
+}
+
+void test_matrixAllOne(){
+    bool arr[][n] = { { 1, 0, 1 },
+                      { 1, 1, 0 },
+                      { 1, 1, 0 } };
+    matrixAllOne(arr);
+}
 void test_subdomainVisits() {
     char *cpdomains[] = {"9001 discuss.leetcode.com"};
     int cpdomainsSize = 1;
@@ -161,6 +222,7 @@ void test() {
     test_two_dimensionalArray();
     test_medianFilter();
     test_subdomainVisits();
+    test_matrixAllOne();
 }
 
 void main(int argc, char **argv) {
