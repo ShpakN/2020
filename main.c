@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <io.h>
+#include <fcntl.h>
 
 
 struct TreeNode {
@@ -291,6 +293,23 @@ char *GetShuffledString(char *s, int *index, int len) {
     return res;
 }
 
+
+void sequenceIntegersLessN(int argc, char **argv) {
+    {
+        int fd, z;
+        char buf[1];
+        fd = open(argv[1], O_RDONLY, 0666);
+        int fn = open(argv[2], O_RDWR | O_CREAT, 0666);
+        z = read(fd, buf, sizeof(buf)) > 0;
+        while (z) {
+            if (atoi(buf) < z) {
+                write(fn, buf, sizeof(int));
+            }
+            z = read(fd, buf, sizeof(buf)) > 0;
+        }
+    }
+}
+
 void test_matrixAllOne() {
     bool arr[][n] = {{1, 0, 1},
                      {1, 1, 0},
@@ -341,6 +360,11 @@ void test_GetShuffledString() {
     free(result1);
 }
 
+
+void test_sequenceIntegersLessN() {
+    sequenceIntegersLessN(4, (char **) 8);
+}
+
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
@@ -349,6 +373,7 @@ void test() {
     test_PrintMinNumberForPattern();
     test_constructMaximumBinaryTree();
     test_GetShuffledString();
+    test_sequenceIntegersLessN();
 }
 
 void main(int argc, char **argv) {
