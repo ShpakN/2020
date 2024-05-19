@@ -4,6 +4,14 @@
 #include <string.h>
 #include <stdbool.h>
 
+
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+
 void two_dimensionalArray(int n) {
     int a[100][100];
 
@@ -142,7 +150,7 @@ void findPrefixCount(int p_arr[][n], bool arr[][n]) {
                 continue;
             if (j != n - 1)
                 p_arr[i][j] += p_arr[i][j + 1];
-            p_arr[i][j] += (int)arr[i][j];
+            p_arr[i][j] += (int) arr[i][j];
         }
     }
 }
@@ -197,7 +205,7 @@ void PrintMinNumberForPattern(char arr[]) {
     for (int i = 0; i < length; i++) {
         int noOfNextD = 0;
 
-        switch(arr[i]) {
+        switch (arr[i]) {
             case 'I':
                 j = i + 1;
                 while (arr[j] == 'D' && j < length) {
@@ -245,12 +253,39 @@ void PrintMinNumberForPattern(char arr[]) {
 }
 
 
-void test_matrixAllOne(){
-    bool arr[][n] = { { 1, 0, 1 },
-                      { 1, 1, 0 },
-                      { 1, 1, 0 } };
+struct TreeNode *constructMaximumBinaryTree(int *nums, int numsSize) {
+    struct TreeNode **v = (struct TreeNode **) malloc(numsSize * sizeof(struct TreeNode *));
+    int vSize = 0;
+
+    for (int i = 0; i < numsSize; i++) {
+        struct TreeNode *cur = (struct TreeNode *) malloc(sizeof(struct TreeNode));
+        cur->val = nums[i];
+        cur->left = NULL;
+        cur->right = NULL;
+
+        while (vSize > 0 && v[vSize - 1]->val < nums[i]) {
+            cur->left = v[vSize - 1];
+            vSize--;
+        }
+
+        if (vSize > 0) {
+            v[vSize - 1]->right = cur;
+        }
+
+        v[vSize] = cur;
+        vSize++;
+    }
+
+    return v[0];
+}
+
+void test_matrixAllOne() {
+    bool arr[][n] = {{1, 0, 1},
+                     {1, 1, 0},
+                     {1, 1, 0}};
     matrixAllOne(arr);
 }
+
 void test_subdomainVisits() {
     char *cpdomains[] = {"9001 discuss.leetcode.com"};
     int cpdomainsSize = 1;
@@ -275,15 +310,25 @@ void test_two_dimensionalArray() {
     two_dimensionalArray(q);
 }
 
-void test_PrintMinNumberForPattern(){
+void test_PrintMinNumberForPattern() {
     PrintMinNumberForPattern("IIIDIDDD");
 }
+
+
+void test_constructMaximumBinaryTree() {
+    int *a = NULL;
+    int nums = a[3, 2, 1];
+    int num_size = 3;
+    constructMaximumBinaryTree(&nums, num_size);
+}
+
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
     test_subdomainVisits();
     test_matrixAllOne();
     test_PrintMinNumberForPattern();
+    test_constructMaximumBinaryTree();
 }
 
 void main(int argc, char **argv) {
