@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <signal.h>
 
+#define MAX_LENGTH 1000
+#define INVALID "INVALID"
 
 struct TreeNode {
     int val;
@@ -225,6 +227,7 @@ int matrixAllOne(bool arr[][n]) {
                 c += q[q_size - 1].second + 1;
                 q_size--;
             }
+
             to_sum += p_arr[i][j];
             ans += to_sum;
             q[q_size].first = p_arr[i][j];
@@ -390,6 +393,65 @@ int contentsOfFilePortionsNLines(int argc, char **argv) {
     return puts("End") == EOF;
 }
 
+
+typedef struct {
+    char mainset[MAX_LENGTH][MAX_LENGTH];
+    char array[MAX_LENGTH][MAX_LENGTH];
+    char main_ary[MAX_LENGTH][MAX_LENGTH];
+    int length;
+} find_str;
+
+void process(find_str *fin, char *input) {
+    int len = strlen(input);
+
+    for (int i = 0; i < len; i++) {
+        for (int j = i; j < len; j++) {
+            strcpy(fin->mainset[fin->length], &input[i]);
+            fin->length++;
+        }
+    }
+}
+
+void initialize(find_str *fin) {
+    fin->length = 0;
+
+    for (int i = 0; i < MAX_LENGTH; i++) {
+        strcpy(fin->main_ary[i], fin->mainset[i]);
+    }
+}
+
+char *query(find_str *fin, int index) {
+    if (index < fin->length) {
+        return fin->main_ary[index];
+    } else {
+        return INVALID;
+    }
+}
+
+void Auto_completionLowercaseEnglishLetters() {
+    find_str fin;
+    int num_of_strings;
+    int num_of_queries;
+    char input[MAX_LENGTH];
+
+    scanf("%d", &num_of_strings);
+
+    for (int i = num_of_strings; --i >= 0;) {
+        scanf("%s", input);
+        process(&fin, input);
+    }
+    initialize(&fin);
+
+    scanf("%d", &num_of_queries);
+
+    for (int i = num_of_queries; --i >= 0;) {
+        int query_index;
+        scanf("%d", &query_index);
+        printf("%s\n", query(&fin, query_index - 1));
+    }
+
+}
+
 void test_matrixAllOne() {
     bool arr[][n] = {{1, 0, 1},
                      {1, 1, 0},
@@ -430,13 +492,16 @@ void test_constructMaximumBinaryTree() {
     int *a = NULL;
     int nums = a[3, 2, 1];
     int num_size = 3;
+
     constructMaximumBinaryTree(&nums, num_size);
 }
 
 
 void test_GetShuffledString() {
     char *result1 = GetShuffledString("abc", (int[]) {0, 1, 2}, 3);
+
     printf("%s\n", result1);
+
     free(result1);
 }
 
@@ -450,6 +515,11 @@ void test_contentsOfFilePortionsNLines() {
     contentsOfFilePortionsNLines(6, (char **) 9);
 }
 
+
+void test_Auto_completionLowercaseEnglishLetters() {
+    Auto_completionLowercaseEnglishLetters();
+}
+
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
@@ -459,6 +529,9 @@ void test() {
     test_constructMaximumBinaryTree();
     test_GetShuffledString();
     test_sequenceIntegersLessN();
+    test_contentsOfFilePortionsNLines();
+    test_Auto_completionLowercaseEnglishLetters();
+
 }
 
 int main(int argc, char **argv) {
