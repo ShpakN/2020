@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <io.h>
 #include <fcntl.h>
+#include <signal.h>
 
 
 struct TreeNode {
@@ -12,6 +13,39 @@ struct TreeNode {
     struct TreeNode *left;
     struct TreeNode *right;
 };
+
+#define MESSAGE "\n--- no more data ---\n"
+#define NLINES 20
+
+#ifndef NOUSE_HANDLER
+volatile
+#endif
+int fd, N = NLINES, stop = 0;
+
+void
+pri_signal(int sig) {
+#ifndef NOUSE_HANDLER
+    char buf[4096];
+    int i, l, o = 0;
+    off_t pos = lseek(fd, 0, SEEK_CUR);
+
+    do {
+        if ((l = read(fd, buf, 4096)) > 0) {
+            for (i = 0; i < l && o < N; i++, pos++)
+                if (buf[i] == '\n')
+                    o++;
+            write(STDOUT_FILENO, buf, i);
+        } else {
+            write(STDOUT_FILENO, MESSAGE, sizeof(MESSAGE) - 1);
+            stop = 1;
+            break;
+        }
+    } while (o < N);
+
+    if (!stop)
+        lseek(fd, pos, SEEK_SET);
+#endif
+}
 
 
 void two_dimensionalArray(int n) {
@@ -148,10 +182,14 @@ struct Pair *subdomainVisits(char **cpdomains, int cpdomainsSize, int *returnSiz
 void findPrefixCount(int p_arr[][n], bool arr[][n]) {
     for (int i = 0; i < n; i++) {
         for (int j = n - 1; j >= 0; j--) {
-            if (!arr[i][j])
+
+            if (!arr[i][j]) {
                 continue;
-            if (j != n - 1)
+            }
+            if (j != n - 1) {
                 p_arr[i][j] += p_arr[i][j + 1];
+            }
+
             p_arr[i][j] += (int) arr[i][j];
         }
     }
@@ -159,6 +197,7 @@ void findPrefixCount(int p_arr[][n], bool arr[][n]) {
 
 int matrixAllOne(bool arr[][n]) {
     int p_arr[n][n];
+
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             p_arr[i][j] = 0;
@@ -173,12 +212,14 @@ int matrixAllOne(bool arr[][n]) {
         struct Pair {
             int first;
             int second;
-        } *q = malloc(n * sizeof(struct Pair));
+        }
+                *q = malloc(n * sizeof(struct Pair));
         int q_size = 0;
         int to_sum = 0;
 
         while (i >= 0) {
             int c = 0;
+
             while (q_size != 0 && q[q_size - 1].first > p_arr[i][j]) {
                 to_sum -= (q[q_size - 1].second + 1) * (q[q_size - 1].first - p_arr[i][j]);
                 c += q[q_size - 1].second + 1;
@@ -298,9 +339,11 @@ void sequenceIntegersLessN(int argc, char **argv) {
     {
         int fd, z;
         char buf[1];
+
         fd = open(argv[1], O_RDONLY, 0666);
         int fn = open(argv[2], O_RDWR | O_CREAT, 0666);
         z = read(fd, buf, sizeof(buf)) > 0;
+
         while (z) {
             if (atoi(buf) < z) {
                 write(fn, buf, sizeof(int));
@@ -308,6 +351,43 @@ void sequenceIntegersLessN(int argc, char **argv) {
             z = read(fd, buf, sizeof(buf)) > 0;
         }
     }
+}
+
+
+int contentsOfFilePortionsNLines(int argc, char **argv) {
+    if (argv[1]) {
+
+        if ((N = atoi(argv[1])) < 1)
+            N = NLINES;
+        argv++;
+    }
+
+    char *name = argv[1] ? argv[1] : (char *) __FILE__;
+    fd = open(name, O_RDONLY);
+
+    signal(SIGINT, pri_signal);
+
+#ifdef NOUSE_HANDLER
+    FILE *f = fdopen(fd, "r");
+#endif
+
+    do {
+#ifdef NOUSE_HANDLER
+        int n = 0, c;
+    while ((c = fgetc(f)) != EOF && n < N) {
+      putchar(c);
+      if (c == '\n')
+        n++;
+    }
+    if (c == EOF) {
+      fputs(MESSAGE, stdout);
+      stop = 1;
+    }
+#endif
+
+    } while (!stop);
+
+    return puts("End") == EOF;
 }
 
 void test_matrixAllOne() {
@@ -365,6 +445,11 @@ void test_sequenceIntegersLessN() {
     sequenceIntegersLessN(4, (char **) 8);
 }
 
+
+void test_contentsOfFilePortionsNLines() {
+    contentsOfFilePortionsNLines(6, (char **) 9);
+}
+
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
@@ -376,6 +461,6 @@ void test() {
     test_sequenceIntegersLessN();
 }
 
-void main(int argc, char **argv) {
+int main(int argc, char **argv) {
     test();
 }
