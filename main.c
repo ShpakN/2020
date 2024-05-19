@@ -279,6 +279,18 @@ struct TreeNode *constructMaximumBinaryTree(int *nums, int numsSize) {
     return v[0];
 }
 
+
+char *GetShuffledString(char *s, int *index, int len) {
+    char *res = (char *) malloc(len * sizeof(char));
+
+    for (int i = 0; i < len; i++) {
+        int ind = index[i];
+        res[ind] = s[i];
+    }
+
+    return res;
+}
+
 void test_matrixAllOne() {
     bool arr[][n] = {{1, 0, 1},
                      {1, 1, 0},
@@ -322,6 +334,13 @@ void test_constructMaximumBinaryTree() {
     constructMaximumBinaryTree(&nums, num_size);
 }
 
+
+void test_GetShuffledString() {
+    char *result1 = GetShuffledString("abc", (int[]) {0, 1, 2}, 3);
+    printf("%s\n", result1);
+    free(result1);
+}
+
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
@@ -329,6 +348,7 @@ void test() {
     test_matrixAllOne();
     test_PrintMinNumberForPattern();
     test_constructMaximumBinaryTree();
+    test_GetShuffledString();
 }
 
 void main(int argc, char **argv) {
