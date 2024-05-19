@@ -187,6 +187,64 @@ int matrixAllOne(bool arr[][n]) {
     return ans;
 }
 
+
+void PrintMinNumberForPattern(char arr[]) {
+    int curr_max = 0;
+    int last_entry = 0;
+    int j;
+    int length = strlen(arr);
+
+    for (int i = 0; i < length; i++) {
+        int noOfNextD = 0;
+
+        switch(arr[i]) {
+            case 'I':
+                j = i + 1;
+                while (arr[j] == 'D' && j < length) {
+                    noOfNextD++;
+                    j++;
+                }
+
+                if (i == 0) {
+                    curr_max = noOfNextD + 2;
+                    printf(" %d", ++last_entry);
+                    printf(" %d", curr_max);
+                    last_entry = curr_max;
+                } else {
+                    curr_max = curr_max + noOfNextD + 1;
+                    last_entry = curr_max;
+                    printf(" %d", last_entry);
+                }
+
+                for (int k = 0; k < noOfNextD; k++) {
+                    printf(" %d", --last_entry);
+                    i++;
+                }
+                break;
+
+            case 'D':
+                if (i == 0) {
+                    j = i + 1;
+                    while (arr[j] == 'D' && j < length) {
+                        noOfNextD++;
+                        j++;
+                    }
+
+                    curr_max = noOfNextD + 2;
+                    printf(" %d %d", curr_max, curr_max - 1);
+                    last_entry = curr_max - 1;
+                } else {
+                    printf(" %d", last_entry - 1);
+                    last_entry--;
+                }
+                break;
+        }
+    }
+
+    printf("\n");
+}
+
+
 void test_matrixAllOne(){
     bool arr[][n] = { { 1, 0, 1 },
                       { 1, 1, 0 },
@@ -212,17 +270,20 @@ void test_medianFilter() {
 }
 
 void test_two_dimensionalArray() {
-    int n = 3;
+    int q = 3;
 
-    two_dimensionalArray(n);
+    two_dimensionalArray(q);
 }
 
-
+void test_PrintMinNumberForPattern(){
+    PrintMinNumberForPattern("IIIDIDDD");
+}
 void test() {
     test_two_dimensionalArray();
     test_medianFilter();
     test_subdomainVisits();
     test_matrixAllOne();
+    test_PrintMinNumberForPattern();
 }
 
 void main(int argc, char **argv) {
